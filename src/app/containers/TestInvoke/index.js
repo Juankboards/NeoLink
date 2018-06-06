@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import Neon, { api } from '@cityofzion/neon-js'
+import Neon, { api, rpc } from '@cityofzion/neon-js'
 
 import { Button } from 'rmwc/Button'
 import { TextField } from 'rmwc/TextField'
@@ -73,19 +73,18 @@ export default class TestInvoke extends Component {
 
     const args = []
     txArgs.forEach((arg) => {
-      if (arg !== '') args.push({ 'type': 7, 'value': arg })
+      if (arg !== '') args.push( arg )
     })
 
-    args.push({ 'type': 7, 'value': 'arg' })
+    // args.push({ 'type': 7, 'value': 'arg' })
 
-    const query = Neon.create.query({
-      method: 'invokefunction',
-      params: [this.state.scriptHash, this.state.operation, args],
-    })
+    const props = {scriptHash: this.state.scriptHash, operation: this.state.operation, args: txArgs};
+    const script = Neon.create.script(props);
 
-    api.neonDB.getRPCEndpoint(networks[selectedNetworkId].url)
+    api.neonDB.getRPCEndpoint('http://api.wallet.cityofzion.io')
       .then((endpoint) => {
-        query.execute(endpoint)
+        rpc.Query.invokeScript(script)
+        .execute(endpoint)
           .then((response) => {
             this.setState({
               loading: false,
@@ -94,6 +93,7 @@ export default class TestInvoke extends Component {
           })
       })
       .catch((e) => {
+        alert(e)
         this.setState({
           loading: false,
           errorMsg: 'Error testing invoke.',
