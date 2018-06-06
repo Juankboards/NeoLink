@@ -73,18 +73,18 @@ export default class TestInvoke extends Component {
 
     const args = []
     txArgs.forEach((arg) => {
-      if (arg !== '') args.push( arg )
+      if (arg !== '') args.push(arg)
     })
 
     // args.push({ 'type': 7, 'value': 'arg' })
 
-    const props = {scriptHash: this.state.scriptHash, operation: this.state.operation, args: txArgs};
-    const script = Neon.create.script(props);
+    const props = { scriptHash: this.state.scriptHash, operation: this.state.operation, args: txArgs }
+    const script = Neon.create.script(props)
 
-    api.neonDB.getRPCEndpoint('http://api.wallet.cityofzion.io')
+    api.neonDB.getRPCEndpoint(networks[selectedNetworkId].url)
       .then((endpoint) => {
         rpc.Query.invokeScript(script)
-        .execute(endpoint)
+          .execute(endpoint)
           .then((response) => {
             this.setState({
               loading: false,
@@ -93,7 +93,6 @@ export default class TestInvoke extends Component {
           })
       })
       .catch((e) => {
-        alert(e)
         this.setState({
           loading: false,
           errorMsg: 'Error testing invoke.',
